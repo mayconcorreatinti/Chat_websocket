@@ -1,7 +1,7 @@
 import os 
 from mysql.connector.aio import connect
 from dotenv import load_dotenv
-import asyncio
+
 
 load_dotenv()
 
@@ -12,12 +12,14 @@ class Mysqldb:
     self._user = os.getenv('USER')
     self._password = os.getenv('PASSWORD')
     self._database = os.getenv('DATABASE')
+    self._port = os.getenv('PORT')
     self.conn = None
 
   async def _connection(self):
     return await connect(
       user = self._user,
       password = self._password,
+      port = self._port,
       host = self._host,
       database = self._database
     )
@@ -35,13 +37,13 @@ class Mysqldb:
   
   async def select_user_from_table(self,username:str) -> list[dict]:
     users = await self._query("""
-      SELECT id,
-        username,
-        email,
-        password,
-      FROM users
-      WHERE username = (%s) 
-      LIMIT 1;
+        SELECT id,
+          username,
+          email,
+          password,
+        FROM users
+        WHERE username = (%s) 
+        LIMIT 1;
       """,
       (username,)
     )
